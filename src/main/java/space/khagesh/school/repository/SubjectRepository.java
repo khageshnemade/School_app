@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import space.khagesh.school.entity.Subject;
 
-public interface SubjectRepository extends JpaRepository<Subject, UUID> {
+public interface SubjectRepository extends JpaRepository<Subject, String> {
 
-	Optional<Subject> findById(UUID subjectId);
+	Optional<Subject> findById(String subjectId);
 
-	void deleteById(UUID id);
+	void deleteById(String id);
 
 }

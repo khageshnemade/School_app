@@ -4,7 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,13 +22,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Subject {
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)  
+    @Convert(converter = UUIDToStringConverter.class)
+	private String id;
 
 	private String name;
 
-	@ManyToMany(mappedBy = "subjects")
+    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "subjects")
 	private Set<Student> students = new HashSet<>();
 
 	@ManyToMany(mappedBy = "subjects")

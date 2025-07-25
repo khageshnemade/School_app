@@ -24,24 +24,25 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
-		http.csrf(csrf -> csrf.disable())
+		http.csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
 				.authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
-						.permitAll().requestMatchers("/api/students/**").hasRole("STUDENT")
-						.requestMatchers("/api/teachers/**").hasRole("TEACHER").anyRequest().authenticated())
+						.permitAll().requestMatchers("/api/students/**", "/api/subjects/**")
+						.hasAnyRole("STUDENT", "TEACHER").requestMatchers("/api/teachers/**").hasRole("TEACHER")
+						.anyRequest().authenticated())
 				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+																								
 
 		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+		return configuration.getAuthenticationManager();
+	}
 }

@@ -1,0 +1,15 @@
+package space.khagesh.school.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class SubjectDTO {
+    private String id;
+    private String name;
+}

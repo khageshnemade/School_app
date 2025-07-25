@@ -4,6 +4,7 @@ package space.khagesh.school.entity;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,8 +27,9 @@ import space.khagesh.school.enums.Role;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)  
+    @Convert(converter = UUIDToStringConverter.class)
+    private String id;
 
     @Column(unique = true, nullable = false)
     private String username;

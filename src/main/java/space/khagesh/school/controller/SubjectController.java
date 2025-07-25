@@ -1,22 +1,17 @@
 package space.khagesh.school.controller;
 
-
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import space.khagesh.school.entity.Subject;
+import space.khagesh.school.dto.SubjectDTO;
 import space.khagesh.school.service.SubjectService;
 
 @RestController
@@ -27,51 +22,59 @@ public class SubjectController {
 
     private final SubjectService service;
 
+    @Operation(summary = "Create a new subject", description = "Creates a new subject with the provided details.")
     @PostMapping
-    public ResponseEntity<Subject> create(@RequestBody Subject s) {
-        return ResponseEntity.ok(service.create(s));
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Subject successfully created"),
+        @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    public ResponseEntity<SubjectDTO> create(@RequestBody SubjectDTO subjectDTO) {
+        return ResponseEntity.ok(service.create(subjectDTO));
     }
 
+    @Operation(summary = "Get a subject by ID", description = "Retrieve a subject by its unique ID.")
     @GetMapping("/{id}")
-    public ResponseEntity<Subject> get(@PathVariable UUID id) {
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Subject found"),
+        @ApiResponse(responseCode = "404", description = "Subject not found")
+    })
+    public ResponseEntity<SubjectDTO> get(
+            @Parameter(description = "ID of the subject to be retrieved", required = true)
+            @PathVariable String id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
+    @Operation(summary = "Get all subjects", description = "Retrieve a list of all subjects.")
     @GetMapping
-    public ResponseEntity<List<Subject>> getAll() {
+    @ApiResponse(responseCode = "200", description = "List of all subjects")
+    public ResponseEntity<List<SubjectDTO>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @Operation(summary = "Update a subject by ID", description = "Update the details of an existing subject.")
     @PutMapping("/{id}")
-    public ResponseEntity<Subject> update(@PathVariable UUID id, @RequestBody Subject s) {
-        return ResponseEntity.ok(service.update(id, s));
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Subject successfully updated"),
+        @ApiResponse(responseCode = "400", description = "Invalid data"),
+        @ApiResponse(responseCode = "404", description = "Subject not found")
+    })
+    public ResponseEntity<SubjectDTO> update(
+            @Parameter(description = "ID of the subject to be updated", required = true)
+            @PathVariable String id, 
+            @RequestBody SubjectDTO subjectDTO) {
+        return ResponseEntity.ok(service.update(id, subjectDTO));
     }
 
+    @Operation(summary = "Delete a subject by ID", description = "Delete the subject with the specified ID.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Subject successfully deleted"),
+        @ApiResponse(responseCode = "404", description = "Subject not found")
+    })
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID of the subject to be deleted", required = true)
+            @PathVariable String id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    // ---- Relations with Teachers ----
-    @PostMapping("/{subjectId}/teachers/{teacherId}")
-    public ResponseEntity<Subject> addTeacher(@PathVariable UUID subjectId, @PathVariable UUID teacherId) {
-        return ResponseEntity.ok(service.addTeacher(subjectId, teacherId));
-    }
-
-    @DeleteMapping("/{subjectId}/teachers/{teacherId}")
-    public ResponseEntity<Subject> removeTeacher(@PathVariable UUID subjectId, @PathVariable UUID teacherId) {
-        return ResponseEntity.ok(service.removeTeacher(subjectId, teacherId));
-    }
-
-    // ---- Relations with Students ----
-    @PostMapping("/{subjectId}/students/{studentId}")
-    public ResponseEntity<Subject> addStudent(@PathVariable UUID subjectId, @PathVariable UUID studentId) {
-        return ResponseEntity.ok(service.addStudent(subjectId, studentId));
-    }
-
-    @DeleteMapping("/{subjectId}/students/{studentId}")
-    public ResponseEntity<Subject> removeStudent(@PathVariable UUID subjectId, @PathVariable UUID studentId) {
-        return ResponseEntity.ok(service.removeStudent(subjectId, studentId));
     }
 }

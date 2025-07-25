@@ -1,17 +1,15 @@
 package space.khagesh.school.service;
 
 import java.util.List;
-import java.util.UUID;
 
-import space.khagesh.school.entity.Teacher;
+import space.khagesh.school.dto.TeacherDTO;
 
 public interface TeacherService {
-    Teacher create(Teacher t);
-    Teacher getById(UUID id);
-    List<Teacher> getAll();
-    Teacher update(UUID id, Teacher t);
-    void delete(UUID id);
+    TeacherDTO getById(String id);
+    List<TeacherDTO> getAll();
+    TeacherDTO update(String id, TeacherDTO t);
+    void delete(String id);
 
-    Teacher addSubject(UUID teacherId, UUID subjectId);
-    Teacher removeSubject(UUID teacherId, UUID subjectId);
+    TeacherDTO addSubject(String teacherId, String subjectId);
+    TeacherDTO removeSubject(String teacherId, String subjectId);
 }
