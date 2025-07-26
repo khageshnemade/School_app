@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import space.khagesh.school.api.ApiResponse;
 import space.khagesh.school.dto.SubjectDTO;
 import space.khagesh.school.service.SubjectService;
 
@@ -24,21 +23,13 @@ public class SubjectController {
 
     @Operation(summary = "Create a new subject", description = "Creates a new subject with the provided details.")
     @PostMapping
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Subject successfully created"),
-        @ApiResponse(responseCode = "400", description = "Bad Request")
-    })
-    public ResponseEntity<SubjectDTO> create(@RequestBody SubjectDTO subjectDTO) {
+    public ResponseEntity<ApiResponse<SubjectDTO>> create(@RequestBody SubjectDTO subjectDTO) {
         return ResponseEntity.ok(service.create(subjectDTO));
     }
 
     @Operation(summary = "Get a subject by ID", description = "Retrieve a subject by its unique ID.")
     @GetMapping("/{id}")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Subject found"),
-        @ApiResponse(responseCode = "404", description = "Subject not found")
-    })
-    public ResponseEntity<SubjectDTO> get(
+    public ResponseEntity<ApiResponse<SubjectDTO>> get(
             @Parameter(description = "ID of the subject to be retrieved", required = true)
             @PathVariable String id) {
         return ResponseEntity.ok(service.getById(id));
@@ -46,35 +37,24 @@ public class SubjectController {
 
     @Operation(summary = "Get all subjects", description = "Retrieve a list of all subjects.")
     @GetMapping
-    @ApiResponse(responseCode = "200", description = "List of all subjects")
-    public ResponseEntity<List<SubjectDTO>> getAll() {
+    public ResponseEntity<ApiResponse<List<SubjectDTO>>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
     @Operation(summary = "Update a subject by ID", description = "Update the details of an existing subject.")
     @PutMapping("/{id}")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Subject successfully updated"),
-        @ApiResponse(responseCode = "400", description = "Invalid data"),
-        @ApiResponse(responseCode = "404", description = "Subject not found")
-    })
-    public ResponseEntity<SubjectDTO> update(
+    public ResponseEntity<ApiResponse<SubjectDTO>> update(
             @Parameter(description = "ID of the subject to be updated", required = true)
-            @PathVariable String id, 
+            @PathVariable String id,
             @RequestBody SubjectDTO subjectDTO) {
         return ResponseEntity.ok(service.update(id, subjectDTO));
     }
 
     @Operation(summary = "Delete a subject by ID", description = "Delete the subject with the specified ID.")
     @DeleteMapping("/{id}")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Subject successfully deleted"),
-        @ApiResponse(responseCode = "404", description = "Subject not found")
-    })
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<ApiResponse<String>> delete(
             @Parameter(description = "ID of the subject to be deleted", required = true)
             @PathVariable String id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(service.delete(id));
     }
 }

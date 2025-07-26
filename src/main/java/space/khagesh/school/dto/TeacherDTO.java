@@ -7,12 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class TeacherDTO {
-    private String id;  // Change from UUID to String
+    private String id;
     private String name;
-    private Set<String> subjectIds;  // Change from UUID to String
+    private Set<String> subjectIds;
 }

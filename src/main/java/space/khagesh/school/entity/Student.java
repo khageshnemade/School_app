@@ -1,36 +1,33 @@
 package space.khagesh.school.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
-
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Data
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)  
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Convert(converter = UUIDToStringConverter.class)
-	private String id;
-	private String name;
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "student_subjects", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "subject_id"))
-	private Set<Subject> subjects = new HashSet<>();
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    private String id;
+
+    @ToString.Include
+    private String name;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<StudentSubject> studentSubjects = new HashSet<>();
 }

@@ -2,37 +2,37 @@ package space.khagesh.school.entity;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter@Setter@ToString @NoArgsConstructor @AllArgsConstructor @Builder
 public class Subject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)  
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Convert(converter = UUIDToStringConverter.class)
-	private String id;
+    private String id;
 
-	private String name;
+    private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "subjects")
-	private Set<Student> students = new HashSet<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<TeacherSubject> teacherSubjects = new HashSet<>();
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<StudentSubject> studentSubjects = new HashSet<>();
 
-	@ManyToMany(mappedBy = "subjects")
-	private Set<Teacher> teachers = new HashSet<>();
 }

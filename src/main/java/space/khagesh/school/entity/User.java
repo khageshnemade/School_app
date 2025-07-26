@@ -1,8 +1,6 @@
 package space.khagesh.school.entity;
 
 
-import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -14,12 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import space.khagesh.school.enums.Role;
 
 @Entity
-@Data
+@Getter@Setter@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

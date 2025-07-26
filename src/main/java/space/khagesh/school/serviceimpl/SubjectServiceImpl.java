@@ -6,8 +6,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import space.khagesh.school.api.ApiResponse;
 import space.khagesh.school.dto.SubjectDTO;
 import space.khagesh.school.entity.Subject;
+import space.khagesh.school.exception.SubjectNotFoundException;
 import space.khagesh.school.repository.SubjectRepository;
 import space.khagesh.school.service.SubjectService;
 
@@ -26,39 +28,66 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public SubjectDTO create(SubjectDTO s) {
+    public ApiResponse<SubjectDTO> create(SubjectDTO s) {
         Subject subject = new Subject();
         subject.setName(s.getName());
-        // Save to DB
         Subject savedSubject = subjectRepository.save(subject);
-        return toDTO(savedSubject);
+
+        return ApiResponse.<SubjectDTO>builder()
+                .success(true)
+                .message("Subject created successfully")
+                .data(toDTO(savedSubject))
+                .build();
     }
 
     @Override
-    public SubjectDTO getById(String id) {
+    public ApiResponse<SubjectDTO> getById(String id) {
         Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
-        return toDTO(subject);
+        		.orElseThrow(() -> new SubjectNotFoundException("Subject not found with id: " + id));
+        return ApiResponse.<SubjectDTO>builder()
+                .success(true)
+                .message("Subject fetched successfully")
+                .data(toDTO(subject))
+                .build();
     }
 
     @Override
-    public List<SubjectDTO> getAll() {
-        return subjectRepository.findAll().stream()
+    public ApiResponse<List<SubjectDTO>> getAll() {
+        List<SubjectDTO> list = subjectRepository.findAll().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+
+        return ApiResponse.<List<SubjectDTO>>builder()
+                .success(true)
+                .message("Subjects fetched successfully")
+                .data(list)
+                .build();
     }
 
     @Override
-    public SubjectDTO update(String id, SubjectDTO s) {
+    public ApiResponse<SubjectDTO> update(String id, SubjectDTO s) {
         Subject existing = subjectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+        		.orElseThrow(() -> new SubjectNotFoundException("Subject not found with id: " + id));
         existing.setName(s.getName());
         Subject updatedSubject = subjectRepository.save(existing);
-        return toDTO(updatedSubject);
+
+        return ApiResponse.<SubjectDTO>builder()
+                .success(true)
+                .message("Subject updated successfully")
+                .data(toDTO(updatedSubject))
+                .build();
     }
 
     @Override
-    public void delete(String id) {
+    public ApiResponse<String> delete(String id) {
+        if (!subjectRepository.existsById(id)) {
+    		throw new SubjectNotFoundException("Subject not found with id: " + id);
+        }
         subjectRepository.deleteById(id);
+        return ApiResponse.<String>builder()
+                .success(true)
+                .message("Subject deleted successfully")
+                .data("Deleted ID: " + id)
+                .build();
     }
 }

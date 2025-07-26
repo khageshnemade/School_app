@@ -1,5 +1,7 @@
 package space.khagesh.school.serviceimpl;
+
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -70,19 +72,38 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Map<String, String> login(String username, String password) {
-    	Authentication authentication = authenticationManager.authenticate(
-    		    new UsernamePasswordAuthenticationToken(username, password)
-    		);
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(username, password)
+        );
 
-    		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-    		String token = jwtUtil.generateToken(userDetails);
-
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String token = jwtUtil.generateToken(userDetails);
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return Map.of("token", token);
+        String name;
+        Student s;
+        if (user.getRole() == Role.STUDENT) {
+            name = studentRepository.findById(user.getId())
+                    .map(Student::getName)
+                    .orElse("Student");
+          
+        } else if (user.getRole() == Role.TEACHER) {
+            name = teacherRepository.findById(user.getId())
+                    .map(Teacher::getName)
+                    .orElse("Teacher");
+         
+        } else {
+            name = "Unknown";
+        }
+
+        return Map.of(
+            "token", token,
+            "role", user.getRole().name(),
+            "name", name
+        );
     }
 
 }
+	
